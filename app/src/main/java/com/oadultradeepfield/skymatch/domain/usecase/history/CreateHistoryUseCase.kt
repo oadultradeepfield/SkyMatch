@@ -9,16 +9,13 @@ import javax.inject.Inject
  *
  * @param repo The repository for creating solving histories.
  */
-class CreateHistoryUseCase @Inject constructor(
-    private val repo: IHistoryRepository
-) {
-    /**
-     * Creates a new solving history with fixed solving results.
-     *
-     * @param initialResults The initial list of solving results for the history.
-     * @return The ID of the created solving history.
-     */
-    suspend fun invoke(
-        initialResults: List<SolvingResult>
-    ): String = repo.createHistory(initialResults)
+class CreateHistoryUseCase @Inject constructor(private val repo: IHistoryRepository) {
+  /**
+   * Creates a new solving history with fixed solving results.
+   *
+   * @param initialResults The initial list of solving results for the history.
+   * @return The ID of the created solving history.
+   */
+  suspend fun invoke(initialResults: List<SolvingResult>): String =
+      repo.createHistory(initialResults)
 }

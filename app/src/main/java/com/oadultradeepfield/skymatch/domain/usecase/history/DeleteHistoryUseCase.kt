@@ -8,18 +8,14 @@ import javax.inject.Inject
  *
  * @param repo The repository for deleting solving histories.
  */
-class DeleteHistoryUseCase @Inject constructor(
-    private val repo: IHistoryRepository
-) {
-    /**
-     * Deletes a specific solving history by its ID.
-     *
-     * @param historyId The ID of the solving history to delete.
-     */
-    suspend operator fun invoke(historyId: String) = repo.deleteHistory(historyId)
+class DeleteHistoryUseCase @Inject constructor(private val repo: IHistoryRepository) {
+  /**
+   * Deletes a specific solving history by its ID.
+   *
+   * @param historyId The ID of the solving history to delete.
+   */
+  suspend operator fun invoke(historyId: String) = repo.deleteHistory(historyId)
 
-    /**
-     * Clears all solving histories.
-     */
-    suspend operator fun invoke() = repo.clearAll()
+  /** Clears all solving histories. */
+  suspend operator fun invoke() = repo.clearAll()
 }

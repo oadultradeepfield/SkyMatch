@@ -7,9 +7,9 @@ package com.oadultradeepfield.skymatch.domain.model.celestialobject
  */
 @Suppress("unused")
 enum class DeepSkyObjectType(val displayName: String) {
-    OPEN_CLUSTER("Open Cluster"),
-    GLOBULAR_CLUSTER("Globular Cluster"),
-    GALAXY("Galaxy"),
-    NEBULA("Nebula"),
-    SUPERNOVA("Supernova"),
+  OPEN_CLUSTER("Open Cluster"),
+  GLOBULAR_CLUSTER("Globular Cluster"),
+  GALAXY("Galaxy"),
+  NEBULA("Nebula"),
+  SUPERNOVA("Supernova"),
 }

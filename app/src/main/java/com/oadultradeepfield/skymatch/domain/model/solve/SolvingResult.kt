@@ -3,14 +3,15 @@ package com.oadultradeepfield.skymatch.domain.model.solve
 import java.time.Instant
 
 /**
- * Represents the result of solving a celestial image, containing a list of identified celestial objects.
+ * Represents the result of solving a celestial image, containing a list of identified celestial
+ * objects.
  *
  * @param id The unique identifier for the solved result.
- * @param identifiedObjects The list of identified celestial objects with their coordinates.
- *                          Null if the solving process is not yet complete.
+ * @param identifiedObjects The list of identified celestial objects with their coordinates. Null if
+ *   the solving process is not yet complete.
  * @param originalImageUri The URI of the original image that was solved.
- * @param annotatedImageUri The URI of the image with annotated celestial objects.
- *                          Null if the solving process is not yet complete.
+ * @param annotatedImageUri The URI of the image with annotated celestial objects. Null if the
+ *   solving process is not yet complete.
  * @param solvingStatus The status of the solving process.
  * @param createdAt The timestamp when the result was created.
  */

@@ -10,13 +10,11 @@ import javax.inject.Inject
  *
  * @param repo The repository for observing solving histories.
  */
-class ObserveHistoryUseCase @Inject constructor(
-    private val repo: IHistoryRepository
-) {
-    /**
-     * Observes all solving histories.
-     *
-     * @return A flow of lists of solving histories.
-     */
-    operator fun invoke(): Flow<List<SolvingHistory>> = repo.observeHistories()
+class ObserveHistoryUseCase @Inject constructor(private val repo: IHistoryRepository) {
+  /**
+   * Observes all solving histories.
+   *
+   * @return A flow of lists of solving histories.
+   */
+  operator fun invoke(): Flow<List<SolvingHistory>> = repo.observeHistories()
 }

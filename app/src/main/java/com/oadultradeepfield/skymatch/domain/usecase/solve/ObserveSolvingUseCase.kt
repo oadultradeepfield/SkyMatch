@@ -12,23 +12,21 @@ import javax.inject.Inject
  *
  * @param repo The repository for solving celestial images.
  */
-class ObserveSolvingUseCase @Inject constructor(
-    private val repo: ISolveRepository
-) {
-    /**
-     * Observes the solving progress for multiple jobs.
-     * Emits a new list whenever any job's status changes.
-     *
-     * @param jobIds The job IDs to observe.
-     * @return A flow emitting the current state of all jobs.
-     */
-    operator fun invoke(jobIds: List<String>): Flow<List<SolvingResult?>> {
-        if (jobIds.isEmpty()) {
-            return flowOf(emptyList())
-        }
-
-        val flows = jobIds.map { jobId -> repo.observeSolving(jobId) }
-
-        return combine(flows) { results -> results.toList() }
+class ObserveSolvingUseCase @Inject constructor(private val repo: ISolveRepository) {
+  /**
+   * Observes the solving progress for multiple jobs. Emits a new list whenever any job's status
+   * changes.
+   *
+   * @param jobIds The job IDs to observe.
+   * @return A flow emitting the current state of all jobs.
+   */
+  operator fun invoke(jobIds: List<String>): Flow<List<SolvingResult?>> {
+    if (jobIds.isEmpty()) {
+      return flowOf(emptyList())
     }
+
+    val flows = jobIds.map { jobId -> repo.observeSolving(jobId) }
+
+    return combine(flows) { results -> results.toList() }
+  }
 }
