@@ -3,14 +3,14 @@ package com.oadultradeepfield.skymatch.domain.model.solve
 import java.time.Instant
 
 /**
- * Represents the history of solved celestial images, containing a list of solved results.
+ * Represents the history of solving celestial images, containing a list of solving results.
  *
  * @param id The unique identifier for the history.
- * @param solvedResults The list of solved results, each containing a list of identified celestial objects.
+ * @param solvingResults The list of solving results, each containing a list of identified celestial objects.
  * @param createdAt The timestamp when the history was created.
  */
-data class SolvedHistory(
+data class SolvingHistory(
     val id: String,
-    val solvedResults: List<SolvedResult>,
+    val solvingResults: List<SolvingResult>,
     val createdAt: Instant = Instant.now(),
 )
