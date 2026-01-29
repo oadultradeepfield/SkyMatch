@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Represents the spectral type of a star.
+ *
+ * @param color The color associated with the spectral type.
  */
 enum class StarSpectralType(val color: Color) {
     O(Color(0xFF9BB0FF)), // Blue
