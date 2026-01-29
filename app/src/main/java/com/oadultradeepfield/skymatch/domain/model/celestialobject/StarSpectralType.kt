@@ -1,4 +1,4 @@
-package com.oadultradeepfield.skymatch.domain.model
+package com.oadultradeepfield.skymatch.domain.model.celestialobject
 
 import androidx.compose.ui.graphics.Color
 

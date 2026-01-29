@@ -1,4 +1,6 @@
-package com.oadultradeepfield.skymatch.domain.model
+package com.oadultradeepfield.skymatch.domain.model.celestialobject
+
+import com.oadultradeepfield.skymatch.domain.model.constellation.Constellation
 
 /**
  * Represents a celestial object in the sky.

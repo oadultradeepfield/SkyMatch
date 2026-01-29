@@ -1,4 +1,4 @@
-package com.oadultradeepfield.skymatch.domain.model
+package com.oadultradeepfield.skymatch.domain.model.constellation
 
 /**
  * Represents a constellation with its Latin and English names.
