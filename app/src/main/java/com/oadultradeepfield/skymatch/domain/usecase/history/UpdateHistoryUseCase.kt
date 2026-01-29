@@ -9,7 +9,7 @@ import javax.inject.Inject
  *
  * @param repo The repository for updating solving results.
  */
-class UpdateSolvingResultUseCase @Inject constructor(
+class UpdateHistoryUseCase @Inject constructor(
     private val repo: IHistoryRepository
 ) {
     /**
