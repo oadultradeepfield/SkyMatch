@@ -5,6 +5,7 @@ package com.oadultradeepfield.skymatch.domain.model.celestialobject
  *
  * @param displayName The human-readable name of the deep sky object type.
  */
+@Suppress("unused")
 enum class DeepSkyObjectType(val displayName: String) {
     OPEN_CLUSTER("Open Cluster"),
     GLOBULAR_CLUSTER("Globular Cluster"),
