@@ -22,7 +22,7 @@ class ObserveSolvingUseCase @Inject constructor(
      * @param jobIds The job IDs to observe.
      * @return A flow emitting the current state of all jobs.
      */
-    operator fun invoke(jobIds: List<String>): Flow<List<SolvingResult>> {
+    operator fun invoke(jobIds: List<String>): Flow<List<SolvingResult?>> {
         if (jobIds.isEmpty()) {
             return flowOf(emptyList())
         }

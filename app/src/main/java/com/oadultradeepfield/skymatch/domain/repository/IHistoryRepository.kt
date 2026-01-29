@@ -16,14 +16,6 @@ interface IHistoryRepository {
     fun observeHistories(): Flow<List<SolvingHistory>>
 
     /**
-     * Observes a specific solving history by its ID.
-     *
-     * @param historyId The ID of the solving history to observe.
-     * @return A flow of the solving history with the specified ID.
-     */
-    fun observeHistory(historyId: String): Flow<SolvingHistory?>
-
-    /**
      * Creates a new solving history with fixed solving results.
      *
      * @param initialResults The initial list of solving results for the history.

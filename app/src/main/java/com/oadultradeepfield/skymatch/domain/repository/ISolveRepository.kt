@@ -28,5 +28,5 @@ interface ISolveRepository {
      * @param jobId The job id of the solving process.
      * @return A flow of solving results updates.
      */
-    fun observeSolving(jobId: String): Flow<SolvingResult>
+    fun observeSolving(jobId: String): Flow<SolvingResult?>
 }
