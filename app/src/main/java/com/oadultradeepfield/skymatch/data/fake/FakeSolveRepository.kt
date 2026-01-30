@@ -91,7 +91,11 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     emit(success)
   }
 
-  /** Creates a fake solving result with optional identified objects. */
+  /**
+   * Creates a fake solving result with optional identified objects.
+   *
+   * The URIs are actually fake content URIs - actual image handling is done by upper layers.
+   */
   private fun createResult(
       jobId: String,
       status: SolvingStatus,
