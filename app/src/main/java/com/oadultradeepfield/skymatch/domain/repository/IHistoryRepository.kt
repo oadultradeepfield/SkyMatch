@@ -1,44 +1,42 @@
 package com.oadultradeepfield.skymatch.domain.repository
 
 import com.oadultradeepfield.skymatch.domain.model.solve.SolvingHistory
-import com.oadultradeepfield.skymatch.domain.model.solve.SolvingResult
 import kotlinx.coroutines.flow.Flow
 
-/** Repository interface for managing solved results history. */
+/** Repository interface for managing solving histories. */
 interface IHistoryRepository {
   /**
    * Observes all solving histories.
    *
-   * @return A flow of lists of solving histories.
+   * @return A flow of lists of solving histories, ordered by creation time (newest first).
    */
   fun observeHistories(): Flow<List<SolvingHistory>>
 
   /**
-   * Creates a new solving history with fixed solving results.
+   * Creates a new empty solving history.
    *
-   * @param initialResults The initial list of solving results for the history.
    * @return The ID of the created solving history.
    */
-  suspend fun createHistory(initialResults: List<SolvingResult>): String
+  suspend fun createHistory(): String
 
   /**
-   * Updates a specific solving result in a solving history.
+   * Adds solving results to an existing history.
    *
-   * @param historyId The ID of the solving history to update.
-   * @param result The solving result to update.
+   * @param historyId The ID of the history to add results to.
+   * @param resultIds The IDs of solving results to add.
    */
-  suspend fun updateSolvingResult(historyId: String, result: SolvingResult)
+  suspend fun addResults(historyId: String, resultIds: List<String>)
 
   /**
-   * Updates multiple solving results in a solving history.
+   * Removes solving results from an existing history.
    *
-   * @param historyId The ID of the solving history to update.
-   * @param results The list of solving results to update.
+   * @param historyId The ID of the history to remove results from.
+   * @param resultIds The IDs of solving results to remove.
    */
-  suspend fun updateSolvingResults(historyId: String, results: List<SolvingResult>)
+  suspend fun removeResults(historyId: String, resultIds: List<String>)
 
   /**
-   * Deletes a specific solving history by its ID.
+   * Deletes a specific solving history.
    *
    * @param historyId The ID of the solving history to delete.
    */

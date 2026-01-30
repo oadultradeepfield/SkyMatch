@@ -10,7 +10,6 @@ import com.oadultradeepfield.skymatch.domain.model.solve.SolvingStatus
 import com.oadultradeepfield.skymatch.domain.repository.ISolveRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import java.util.UUID
@@ -18,20 +17,24 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 
-/** A fake implementation of [ISolveRepository] for testing purposes. */
+/**
+ * Fake implementation of [ISolveRepository] for testing.
+ *
+ * Simulates plate solving with configurable delays and failure rates. All data is stored in-memory
+ * and does not persist across instances. Image URIs are returned as fake content URIs - actual
+ * image handling is done by upper layers.
+ */
 @Singleton
 class FakeSolveRepository @Inject constructor() : ISolveRepository {
-  private val resultsByJobId = mutableMapOf<String, SolvingResult>()
+  private val results = mutableMapOf<String, SolvingResult>()
   private val cancelledJobs = mutableSetOf<String>()
 
-  private val maximumNetworkDelay = 1_000L
-  private val pFailOnSolve = 0.10
-  private val pFailDuringObserve = 0.20
+  var networkDelayMs: Long = 500L
+  var failureProbability: Double = 0.10
+  var observeFailureProbability: Double = 0.20
 
-  private val originalImageBaseUri = "content://fake/original"
-  private val annotatedImageBaseUri = "content://fake/annotated"
-
-  private val solvingTimeline: List<Pair<SolvingStatus, Long>> =
+  /** Simulated solving timeline with delays between status changes. */
+  private val solvingTimeline =
       listOf(
           SolvingStatus.QUEUED to 1_000L,
           SolvingStatus.IDENTIFYING_OBJECTS to 2_000L,
@@ -40,99 +43,55 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
       )
 
   override suspend fun solve(imageByte: ByteArray): String {
-    simulateNetworkDelay()
+    delay(Random.nextLong(networkDelayMs))
 
-    if (Random.nextDouble() < pFailOnSolve) {
-      throw IOException("Fake network failure in solve")
+    if (Random.nextDouble() < failureProbability) {
+      throw IOException("Simulated network failure")
     }
 
     val jobId = UUID.randomUUID().toString()
-
-    resultsByJobId[jobId] =
-        createResult(jobId = jobId, status = SolvingStatus.QUEUED, includeObjects = false)
-
+    results[jobId] = createResult(jobId, SolvingStatus.QUEUED)
     return jobId
   }
 
   override suspend fun cancelSolving(jobId: String) {
-    simulateNetworkDelay()
+    delay(Random.nextLong(networkDelayMs))
     cancelledJobs.add(jobId)
-    resultsByJobId[jobId] =
-        createResult(jobId = jobId, status = SolvingStatus.CANCELLED, includeObjects = false)
+    results[jobId] = createResult(jobId, SolvingStatus.CANCELLED)
   }
 
   override fun observeSolving(jobId: String): Flow<SolvingResult?> = flow {
-    val initial = resultsByJobId[jobId]
+    val initial = results[jobId]
     emit(initial)
     if (initial == null) return@flow
 
-    for ((status, waitMs) in solvingTimeline) {
-      if (isCancelled(jobId)) return@flow
+    for ((status, delayMs) in solvingTimeline) {
+      if (jobId in cancelledJobs) return@flow
 
-      delay(waitMs)
+      delay(delayMs)
 
-      if (maybeFailDuringObserve(jobId)) return@flow
-      if (isCancelled(jobId)) return@flow
+      if (Random.nextDouble() < observeFailureProbability) {
+        val failed = createResult(jobId, SolvingStatus.FAILURE)
+        results[jobId] = failed
+        emit(failed)
+        return@flow
+      }
 
-      val updated = createResult(jobId = jobId, status = status, includeObjects = false)
-      emitAndStore(jobId, updated)
+      if (jobId in cancelledJobs) return@flow
+
+      val updated = createResult(jobId, status)
+      results[jobId] = updated
+      emit(updated)
     }
 
-    if (isCancelled(jobId)) return@flow
+    if (jobId in cancelledJobs) return@flow
 
-    val success = createResult(jobId = jobId, status = SolvingStatus.SUCCESS, includeObjects = true)
-    emitAndStore(jobId, success)
+    val success = createResult(jobId, SolvingStatus.SUCCESS, includeObjects = true)
+    results[jobId] = success
+    emit(success)
   }
 
-  /** Simulates a random network delay up to the maximum specified. */
-  private suspend fun simulateNetworkDelay() {
-    delay(Random.nextLong(maximumNetworkDelay))
-  }
-
-  /**
-   * Checks whether a solving job with the specified ID has been cancelled.
-   *
-   * @param jobId The unique identifier for the solving job.
-   * @return True if the job has been cancelled, false otherwise.
-   */
-  private fun isCancelled(jobId: String): Boolean = jobId in cancelledJobs
-
-  /**
-   * Emits a solving result to the flow collector and stores it in the results map.
-   *
-   * @param jobId The unique identifier for the solving job.
-   * @param result The solving result to emit and store.
-   */
-  private suspend fun FlowCollector<SolvingResult?>.emitAndStore(
-      jobId: String,
-      result: SolvingResult,
-  ) {
-    resultsByJobId[jobId] = result
-    emit(result)
-  }
-
-  /**
-   * Simulates a random failure during observation of a solving job.
-   *
-   * @param jobId The unique identifier for the solving job.
-   * @return True if a failure was simulated, false otherwise.
-   */
-  private suspend fun FlowCollector<SolvingResult?>.maybeFailDuringObserve(jobId: String): Boolean {
-    if (Random.nextDouble() >= pFailDuringObserve) return false
-
-    val failed = createResult(jobId = jobId, status = SolvingStatus.FAILURE, includeObjects = false)
-    emitAndStore(jobId, failed)
-    return true
-  }
-
-  /**
-   * Creates a fake solving result with the specified parameters.
-   *
-   * @param jobId The unique identifier for the solving job.
-   * @param status The status of the solving process.
-   * @param includeObjects Whether to include identified objects in the result. Default is false.
-   * @return A fake solving result.
-   */
+  /** Creates a fake solving result with optional identified objects. */
   private fun createResult(
       jobId: String,
       status: SolvingStatus,
@@ -141,19 +100,14 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     return SolvingResult(
         id = jobId,
         solvingStatus = status,
-        originalImageUri = "$originalImageBaseUri/$jobId",
-        annotatedImageUri = if (includeObjects) "$annotatedImageBaseUri/$jobId" else null,
-        identifiedObjects = if (includeObjects) fakeIdentifiedObjects() else null,
+        originalImageUri = "content://fake/$jobId",
+        annotatedImageUri = if (includeObjects) "content://fake/$jobId/annotated" else null,
+        identifiedObjects = if (includeObjects) createFakeObjects() else null,
     )
   }
 
-  /**
-   * Creates a fake list of identified objects. Note: The list is generated by LLM, the correctness
-   * is not guaranteed.
-   *
-   * @return A list of fake identified objects.
-   */
-  private fun fakeIdentifiedObjects(): List<IdentifiedObject> {
+  /** Creates a fake list of identified objects. */
+  private fun createFakeObjects(): List<IdentifiedObject> {
     val orion = Constellation(latinName = "Orion", englishName = "The Hunter")
     val andromeda = Constellation(latinName = "Andromeda", englishName = "The Chained Maiden")
     val taurus = Constellation(latinName = "Taurus", englishName = "The Bull")

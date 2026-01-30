@@ -4,7 +4,7 @@ import com.oadultradeepfield.skymatch.domain.repository.IHistoryRepository
 import javax.inject.Inject
 
 /**
- * Use case for deleting a specific solving history by its ID.
+ * Use case for deleting solving histories.
  *
  * @param repo The repository for deleting solving histories.
  */
@@ -17,5 +17,5 @@ class DeleteHistoryUseCase @Inject constructor(private val repo: IHistoryReposit
   suspend operator fun invoke(historyId: String) = repo.deleteHistory(historyId)
 
   /** Clears all solving histories. */
-  suspend operator fun invoke() = repo.clearAll()
+  suspend fun clearAll() = repo.clearAll()
 }

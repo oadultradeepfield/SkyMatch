@@ -12,7 +12,7 @@ import javax.inject.Inject
  */
 class ObserveHistoryUseCase @Inject constructor(private val repo: IHistoryRepository) {
   /**
-   * Observes all solving histories.
+   * Observes all solving histories ordered by creation time (newest first).
    *
    * @return A flow of lists of solving histories.
    */
