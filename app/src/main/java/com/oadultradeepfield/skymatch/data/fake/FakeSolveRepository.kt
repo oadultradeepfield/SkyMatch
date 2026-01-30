@@ -29,9 +29,9 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
   private val results = mutableMapOf<String, SolvingResult>()
   private val cancelledJobs = mutableSetOf<String>()
 
-  var networkDelayMs: Long = 500L
-  var failureProbability: Double = 0.10
-  var observeFailureProbability: Double = 0.20
+  private val networkDelayMs: Long = 500L
+  private val failureProbability: Double = 0.10
+  private val observeFailureProbability: Double = 0.20
 
   /** Simulated solving timeline with delays between status changes. */
   private val solvingTimeline =
