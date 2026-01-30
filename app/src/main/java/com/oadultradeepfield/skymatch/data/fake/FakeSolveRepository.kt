@@ -110,6 +110,8 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     )
   }
 
+  fun getResult(jobId: String): SolvingResult? = results[jobId]
+
   /** Creates a fake list of identified objects. */
   private fun createFakeObjects(): List<IdentifiedObject> {
     val orion = Constellation(latinName = "Orion", englishName = "The Hunter")
