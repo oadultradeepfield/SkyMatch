@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.navigation.compose)
   val composeBom = platform("androidx.compose:compose-bom:2026.01.00")
   implementation(composeBom)
   androidTestImplementation(composeBom)
@@ -48,11 +49,13 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.hilt.android)
   implementation(libs.material3)
+  implementation(libs.material)
   implementation(libs.androidx.ui.tooling.preview)
   debugImplementation(libs.androidx.ui.tooling)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.ui.text.google.fonts)
+  implementation(libs.androidx.hilt.navigation.compose)
 
   ksp(libs.hilt.compiler)
   testImplementation(libs.junit)
