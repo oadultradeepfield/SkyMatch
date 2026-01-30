@@ -2,6 +2,7 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.hilt.android)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -18,7 +19,10 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  buildFeatures { buildConfig = true }
+  buildFeatures {
+    buildConfig = true
+    compose = true
+  }
 
   buildTypes {
     debug { buildConfigField("Boolean", "IS_DEBUG", "true") }
@@ -35,11 +39,21 @@ android {
 }
 
 dependencies {
+  val composeBom = platform("androidx.compose:compose-bom:2026.01.00")
+  implementation(composeBom)
+  androidTestImplementation(composeBom)
+
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
-  implementation(libs.material)
   implementation(libs.hilt.android)
+  implementation(libs.material3)
+  implementation(libs.androidx.ui.tooling.preview)
+  debugImplementation(libs.androidx.ui.tooling)
+  implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+  implementation(libs.androidx.ui.text.google.fonts)
+
   ksp(libs.hilt.compiler)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
