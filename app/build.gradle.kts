@@ -7,7 +7,7 @@ plugins {
 
 android {
   namespace = "com.oadultradeepfield.skymatch"
-  compileSdk { version = release(36) }
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "com.oadultradeepfield.skymatch"
@@ -40,7 +40,8 @@ android {
 
 dependencies {
   implementation(libs.androidx.navigation.compose)
-  val composeBom = platform("androidx.compose:compose-bom:2026.01.00")
+  implementation(libs.androidx.foundation)
+  val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
   implementation(composeBom)
   androidTestImplementation(composeBom)
 
@@ -50,10 +51,11 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.material3)
   implementation(libs.material)
+  implementation(libs.androidx.material.icons.core)
+  implementation(libs.androidx.material.icons.extended)
   implementation(libs.androidx.ui.tooling.preview)
   debugImplementation(libs.androidx.ui.tooling)
   implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.ui.text.google.fonts)
   implementation(libs.androidx.hilt.navigation.compose)
 

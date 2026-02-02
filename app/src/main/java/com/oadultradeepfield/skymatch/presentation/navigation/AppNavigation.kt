@@ -1,30 +1,23 @@
 package com.oadultradeepfield.skymatch.presentation.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.oadultradeepfield.skymatch.presentation.upload.UploadScreen
+import com.oadultradeepfield.skymatch.presentation.home.HomeScreen
 
-/** Main navigation graph for the SkyMatch application. */
 @Composable
-fun AppNavigation(
-    modifier: Modifier = Modifier,
-) {
+fun AppNavigation(modifier: Modifier = Modifier) {
   val navController = rememberNavController()
 
+  // TODO: Add other destinations and implement real navigation
   NavHost(
       navController = navController,
-      startDestination = "upload",
-      modifier = modifier,
+      startDestination = "home",
+      modifier = modifier.fillMaxSize(),
   ) {
-    composable("upload") {
-      UploadScreen(
-          onNavigateToSolving = { imageUris ->
-            navController.navigate("solving/${imageUris.joinToString(",")}")
-          }
-      )
-    }
+    composable("home") { HomeScreen(onNavigateToUpload = {}) }
   }
 }
