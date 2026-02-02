@@ -21,10 +21,6 @@ constructor(
   private var searchJob: Job? = null
   private val debounceDelayMs = 300L
 
-  init {
-    dispatch(SearchIntent.LoadConstellations)
-  }
-
   override suspend fun handleIntent(intent: SearchIntent) {
     when (intent) {
       is SearchIntent.UpdateQuery -> handleQueryChanged(intent.query)

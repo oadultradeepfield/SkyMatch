@@ -83,7 +83,7 @@ private fun ErrorContent(
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = error,
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.error,
         textAlign = TextAlign.Center,
     )
@@ -106,7 +106,7 @@ private fun EmptyContent(modifier: Modifier = Modifier) {
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "No constellations found",
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }

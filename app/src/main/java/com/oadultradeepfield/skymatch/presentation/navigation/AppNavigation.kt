@@ -7,17 +7,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.oadultradeepfield.skymatch.presentation.home.HomeScreen
+import com.oadultradeepfield.skymatch.presentation.search.SearchScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
   val navController = rememberNavController()
 
-  // TODO: Add other destinations and implement real navigation
   NavHost(
       navController = navController,
       startDestination = "home",
       modifier = modifier.fillMaxSize(),
   ) {
-    composable("home") { HomeScreen(onNavigateToUpload = {}) }
+    composable("home") {
+      HomeScreen(
+          // TODO: Implement upload
+          onNavigateToUpload = {},
+          onNavigateToSearch = { navController.navigate("search") },
+      )
+    }
+    composable("search") { SearchScreen(onNavigateBack = { navController.popBackStack() }) }
   }
 }
