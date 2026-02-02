@@ -15,11 +15,11 @@ constructor(
     private val repo: ISearchRepository,
 ) {
   /**
-   * Searches for a constellation by its name.
+   * Searches for constellations matching the given query.
    *
-   * @param name The name of the constellation to search for.
-   * @return The constellation with the given name, or null if no constellation with that name
-   *   exists.
+   * @param query The search query to filter constellations by Latin or English name. If empty,
+   *   returns all constellations.
+   * @return A list of constellations matching the query (case-insensitive).
    */
-  suspend operator fun invoke(name: String): Constellation? = repo.searchConstellation(name)
+  suspend operator fun invoke(query: String): List<Constellation> = repo.searchConstellations(query)
 }

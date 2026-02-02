@@ -4,12 +4,19 @@ import com.oadultradeepfield.skymatch.domain.model.constellation.Constellation
 
 /** Repository interface for searching constellations. */
 interface ISearchRepository {
+
   /**
-   * Searches for a constellation by its name.
+   * Retrieves all available constellations.
    *
-   * @param name The name of the constellation to search for.
-   * @return The constellation with the given name, or null if no constellation with that name
-   *   exists.
+   * @return A list of all constellations.
    */
-  suspend fun searchConstellation(name: String): Constellation?
+  suspend fun getAllConstellations(): List<Constellation>
+
+  /**
+   * Searches for constellations matching the given query.
+   *
+   * @param query The search query to filter constellations by Latin or English name.
+   * @return A list of constellations matching the query (case-insensitive).
+   */
+  suspend fun searchConstellations(query: String): List<Constellation>
 }
