@@ -39,12 +39,12 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
   private val histories = MutableStateFlow<List<HistoryData>>(emptyList())
 
   override fun observeHistories(): Flow<List<SolvingHistory>> {
+    val solveRepo = solveRepository as? FakeSolveRepository
+
     return histories.map { historyDataList ->
       historyDataList
           .map { data ->
-            val solveRepo = solveRepository as? FakeSolveRepository
             val results = data.resultIds.mapNotNull { id -> solveRepo?.getResult(id) }
-
             SolvingHistory(id = data.id, solvingResults = results, createdAt = data.createdAt)
           }
           .sortedByDescending { it.createdAt }
