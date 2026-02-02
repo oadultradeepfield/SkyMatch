@@ -1,8 +1,10 @@
 package com.oadultradeepfield.skymatch.presentation.home
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,18 +21,24 @@ import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 fun ConstellationSearchBar(
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
+    expanded: Boolean = false,
+    textFieldState: TextFieldState? = null,
     showBackButton: Boolean = false,
     onBackClick: (() -> Unit)? = null,
+    showClearButton: Boolean = false,
+    onClearClick: (() -> Unit)? = null,
 ) {
-  val textFieldState = rememberTextFieldState()
+  val state = textFieldState ?: rememberTextFieldState()
 
   SearchBarDefaults.InputField(
       modifier = modifier,
-      state = textFieldState,
+      state = state,
       onSearch = { onSearchClick() },
-      expanded = false,
+      expanded = expanded,
       onExpandedChange = { if (it) onSearchClick() },
-      placeholder = { Text("Type a constellation name...") },
+      placeholder = {
+        Text(if (expanded) "Search constellations..." else "Type a constellation name...")
+      },
       leadingIcon = {
         if (showBackButton && onBackClick != null) {
           IconButton(onClick = onBackClick) {
@@ -40,6 +48,16 @@ fun ConstellationSearchBar(
           Icon(Icons.Filled.Search, contentDescription = null)
         }
       },
+      trailingIcon =
+          if (expanded && showClearButton && onClearClick != null) {
+            {
+              IconButton(onClick = onClearClick) {
+                Icon(Icons.Default.Close, contentDescription = "Clear")
+              }
+            }
+          } else {
+            null
+          },
   )
 }
 
@@ -49,10 +67,17 @@ fun PreviewConstellationSearchBarEntry() {
   AppTheme(dynamicColor = false) { ConstellationSearchBar(onSearchClick = {}) }
 }
 
-@Preview(showBackground = true, name = "With Back Button")
+@Preview(showBackground = true, name = "Expanded With Clear Button")
 @Composable
-fun PreviewConstellationSearchBarWithBack() {
+fun PreviewConstellationSearchBarExpandedWithClear() {
   AppTheme(dynamicColor = false) {
-    ConstellationSearchBar(onSearchClick = {}, showBackButton = true, onBackClick = {})
+    ConstellationSearchBar(
+        onSearchClick = {},
+        expanded = true,
+        showBackButton = true,
+        onBackClick = {},
+        showClearButton = true,
+        onClearClick = {},
+    )
   }
 }
