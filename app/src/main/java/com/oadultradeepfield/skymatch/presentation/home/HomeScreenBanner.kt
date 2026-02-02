@@ -33,7 +33,10 @@ import com.oadultradeepfield.skymatch.R
 import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 
 @Composable
-fun HomeScreenBanner(modifier: Modifier = Modifier) {
+fun HomeScreenBanner(
+    onNavigateToSearch: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
   Box(modifier = modifier.background(Color.Black)) {
     // Background image with gradient overlay
     Image(
@@ -84,8 +87,7 @@ fun HomeScreenBanner(modifier: Modifier = Modifier) {
 
       Spacer(modifier = Modifier.size(28.dp))
 
-      // TODO: Navigate to search screen
-      ConstellationSearchBar(onSearchClick = {}, modifier = Modifier.fillMaxWidth())
+      ConstellationSearchBar(onSearchClick = onNavigateToSearch, modifier = Modifier.fillMaxWidth())
     }
   }
 }
@@ -93,5 +95,5 @@ fun HomeScreenBanner(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewHomeScreenBanner() {
-  AppTheme(dynamicColor = false) { HomeScreenBanner() }
+  AppTheme(dynamicColor = false) { HomeScreenBanner(onNavigateToSearch = {}) }
 }
