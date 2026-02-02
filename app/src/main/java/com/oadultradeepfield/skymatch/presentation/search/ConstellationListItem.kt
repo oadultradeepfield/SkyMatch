@@ -1,7 +1,5 @@
 package com.oadultradeepfield.skymatch.presentation.search
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -88,18 +86,13 @@ private fun ConstellationListItemLayout(
 @Composable
 fun PreviewConstellationListItem() {
   AppTheme(dynamicColor = false) {
-    ConstellationListItemLayout(
-        latinName = "Orion",
-        englishName = "The Hunter",
-        image = {
-          // Preview only use filled solid color instead of an actual image
-          Box(
-              modifier =
-                  Modifier.size(72.dp)
-                      .clip(RoundedCornerShape(8.dp))
-                      .background(MaterialTheme.colorScheme.primaryContainer)
-          )
-        },
+    ConstellationListItem(
+        constellation =
+            Constellation(
+                latinName = "Orion",
+                englishName = "The Hunter",
+                imageUrl = "",
+            ),
     )
   }
 }
