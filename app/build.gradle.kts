@@ -58,6 +58,8 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.ui.text.google.fonts)
   implementation(libs.androidx.hilt.navigation.compose)
+  implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
 
   ksp(libs.hilt.compiler)
   testImplementation(libs.junit)
