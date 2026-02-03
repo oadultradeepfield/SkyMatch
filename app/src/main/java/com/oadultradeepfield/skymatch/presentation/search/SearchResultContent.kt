@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.SearchOff
@@ -56,9 +56,12 @@ private fun SearchResultContentLayout(
     constellations.isEmpty() -> EmptyContent(modifier = modifier)
     else ->
         LazyColumn(modifier = modifier.fillMaxSize()) {
-          items(constellations, key = { it.latinName }) { constellation ->
+          itemsIndexed(constellations, key = { _, item -> item.latinName }) { index, constellation
+            ->
             ConstellationListItem(constellation = constellation)
-            HorizontalDivider()
+            if (index < constellations.lastIndex) {
+              HorizontalDivider()
+            }
           }
         }
   }

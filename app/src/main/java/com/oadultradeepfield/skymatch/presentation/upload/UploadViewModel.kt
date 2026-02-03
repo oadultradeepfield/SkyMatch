@@ -67,7 +67,7 @@ class UploadViewModel @Inject constructor() :
   private fun handleStartSolving(intent: UploadIntent.StartSolving) {
     val currentState = state.value
     if (currentState.selectedImages.isEmpty()) {
-      viewModelScope.launch { sendEvent(UploadEvent.ShowError("Please select at least one image")) }
+      handleError(Exception("Please select at least one image"))
       return
     }
 

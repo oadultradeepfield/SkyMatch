@@ -37,7 +37,9 @@ fun HomeScreenBanner(
     onNavigateToSearch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.background(Color.Black)) {
+  val backgroundColor = MaterialTheme.colorScheme.background
+
+  Box(modifier = modifier.background(backgroundColor)) {
     // Background image with gradient overlay
     Image(
         painter = painterResource(id = R.drawable.banner_bg),
@@ -49,8 +51,8 @@ fun HomeScreenBanner(
               drawRect(
                   brush =
                       Brush.verticalGradient(
-                          colors = listOf(Color.Transparent, Color.Black),
-                          startY = size.height * 0.7f,
+                          colors = listOf(Color.Transparent, backgroundColor),
+                          startY = size.height * 0.8f,
                           endY = size.height,
                       )
               )
