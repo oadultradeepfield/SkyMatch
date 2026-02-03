@@ -23,20 +23,8 @@ import javax.inject.Singleton
 @Singleton
 class FakeHistoryRepository @Inject constructor(private val solveRepository: ISolveRepository) :
     IHistoryRepository {
-  /**
-   * Represents a history entry in the fake repository.
-   *
-   * @param id The unique identifier of the history entry.
-   * @param resultIds The list of result IDs associated with the history entry.
-   * @param createdAt The timestamp when the history entry was created.
-   */
-  private data class HistoryData(
-      val id: String,
-      val resultIds: List<String>,
-      val createdAt: Instant,
-  )
 
-  private val histories = MutableStateFlow<List<HistoryData>>(emptyList())
+  private val histories = MutableStateFlow<List<MockData.HistoryData>>(MockData.initialHistories)
 
   override fun observeHistories(): Flow<List<SolvingHistory>> {
     val solveRepo = solveRepository as? FakeSolveRepository
@@ -44,7 +32,12 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
     return histories.map { historyDataList ->
       historyDataList
           .map { data ->
-            val results = data.resultIds.mapNotNull { id -> solveRepo?.getResult(id) }
+            val results =
+                data.resultIds.mapNotNull { id ->
+                  // We know that the data is from the solve repository (manual user testing) if
+                  // its id is not in the mock data mapping.
+                  MockData.solvingResults[id] ?: solveRepo?.getResult(id)
+                }
             SolvingHistory(id = data.id, solvingResults = results, createdAt = data.createdAt)
           }
           .sortedByDescending { it.createdAt }
@@ -54,7 +47,7 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
   override suspend fun createHistory(): String {
     val historyId = UUID.randomUUID().toString()
     val history =
-        HistoryData(
+        MockData.HistoryData(
             id = historyId,
             resultIds = mutableListOf(),
             createdAt = Instant.now(),
