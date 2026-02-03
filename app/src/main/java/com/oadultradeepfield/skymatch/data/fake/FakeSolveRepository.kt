@@ -68,7 +68,10 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     if (initial == null) return@flow
 
     for ((status, delayMs) in solvingTimeline) {
-      if (jobId in cancelledJobs) return@flow
+      if (jobId in cancelledJobs) {
+        results[jobId]?.let { emit(it) }
+        return@flow
+      }
 
       delay(delayMs)
 
@@ -81,7 +84,10 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
         return@flow
       }
 
-      if (jobId in cancelledJobs) return@flow
+      if (jobId in cancelledJobs) {
+        results[jobId]?.let { emit(it) }
+        return@flow
+      }
 
       results[jobId]?.let {
         val updated = it.copy(solvingStatus = status)
@@ -90,7 +96,10 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
       }
     }
 
-    if (jobId in cancelledJobs) return@flow
+    if (jobId in cancelledJobs) {
+      results[jobId]?.let { emit(it) }
+      return@flow
+    }
 
     results[jobId]?.let {
       val success =
