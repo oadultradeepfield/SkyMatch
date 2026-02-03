@@ -9,9 +9,10 @@ interface ISolveRepository {
    * Solves a celestial image and returns the job id.
    *
    * @param imageByte The byte array representation of the celestial image to be solved.
+   * @param originalImageUri The URI of the original image for local persistence.
    * @return The job id of the solving process.
    */
-  suspend fun solve(imageByte: ByteArray): String
+  suspend fun solve(imageByte: ByteArray, originalImageUri: String): String
 
   /**
    * Cancels the solving process for a celestial image with the specified job id.

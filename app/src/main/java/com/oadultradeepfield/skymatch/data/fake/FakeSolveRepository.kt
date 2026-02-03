@@ -27,6 +27,7 @@ import kotlin.random.Random
 @Singleton
 class FakeSolveRepository @Inject constructor() : ISolveRepository {
   private val results = mutableMapOf<String, SolvingResult>()
+  private val originalImageUris = mutableMapOf<String, String>()
   private val cancelledJobs = mutableSetOf<String>()
 
   private val networkDelayMs: Long = 500L
@@ -42,7 +43,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
           SolvingStatus.FINDING_INTERESTING_INFO to 1_500L,
       )
 
-  override suspend fun solve(imageByte: ByteArray): String {
+  override suspend fun solve(imageByte: ByteArray, originalImageUri: String): String {
     delay(Random.nextLong(networkDelayMs))
 
     if (Random.nextDouble() < failureProbability) {
@@ -50,14 +51,15 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     }
 
     val jobId = UUID.randomUUID().toString()
-    results[jobId] = createResult(jobId, SolvingStatus.QUEUED)
+    originalImageUris[jobId] = originalImageUri
+    results[jobId] = createResult(jobId)
     return jobId
   }
 
   override suspend fun cancelSolving(jobId: String) {
     delay(Random.nextLong(networkDelayMs))
     cancelledJobs.add(jobId)
-    results[jobId] = createResult(jobId, SolvingStatus.CANCELLED)
+    results[jobId]?.let { results[jobId] = it.copy(solvingStatus = SolvingStatus.CANCELLED) }
   }
 
   override fun observeSolving(jobId: String): Flow<SolvingResult?> = flow {
@@ -71,42 +73,42 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
       delay(delayMs)
 
       if (Random.nextDouble() < observeFailureProbability) {
-        val failed = createResult(jobId, SolvingStatus.FAILURE)
-        results[jobId] = failed
-        emit(failed)
+        results[jobId]?.let {
+          val failed = it.copy(solvingStatus = SolvingStatus.FAILURE)
+          results[jobId] = failed
+          emit(failed)
+        }
         return@flow
       }
 
       if (jobId in cancelledJobs) return@flow
 
-      val updated = createResult(jobId, status)
-      results[jobId] = updated
-      emit(updated)
+      results[jobId]?.let {
+        val updated = it.copy(solvingStatus = status)
+        results[jobId] = updated
+        emit(updated)
+      }
     }
 
     if (jobId in cancelledJobs) return@flow
 
-    val success = createResult(jobId, SolvingStatus.SUCCESS, includeObjects = true)
-    results[jobId] = success
-    emit(success)
+    results[jobId]?.let {
+      val success =
+          it.copy(
+              solvingStatus = SolvingStatus.SUCCESS,
+              annotatedImageUri = "content://fake/$jobId/annotated",
+              identifiedObjects = createFakeObjects(),
+          )
+      results[jobId] = success
+      emit(success)
+    }
   }
 
-  /**
-   * Creates a fake solving result with optional identified objects.
-   *
-   * The URIs are actually fake content URIs - actual image handling is done by upper layers.
-   */
-  private fun createResult(
-      jobId: String,
-      status: SolvingStatus,
-      includeObjects: Boolean = false,
-  ): SolvingResult {
+  private fun createResult(jobId: String): SolvingResult {
     return SolvingResult(
         id = jobId,
-        solvingStatus = status,
-        originalImageUri = "content://fake/$jobId",
-        annotatedImageUri = if (includeObjects) "content://fake/$jobId/annotated" else null,
-        identifiedObjects = if (includeObjects) createFakeObjects() else null,
+        solvingStatus = SolvingStatus.QUEUED,
+        originalImageUri = originalImageUris[jobId] ?: "",
     )
   }
 

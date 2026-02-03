@@ -13,15 +13,15 @@ import javax.inject.Inject
  */
 class SolveImagesUseCase @Inject constructor(private val repo: ISolveRepository) {
   /**
-   * Solves a list of image bytes to identify celestial objects.
+   * Solves a list of images to identify celestial objects.
    *
-   * @param imageBytes The list of image bytes to be solved.
+   * @param images The list of pairs containing image bytes and their original URIs.
    * @return A list of results, where each result is either a success with the job ID or a failure
    *   with an exception.
    */
   suspend operator fun invoke(
-      imageBytes: List<ByteArray>,
+      images: List<Pair<ByteArray, String>>,
   ): List<Result<String>> = coroutineScope {
-    imageBytes.map { bytes -> async { runCatching { repo.solve(bytes) } } }.awaitAll()
+    images.map { (bytes, uri) -> async { runCatching { repo.solve(bytes, uri) } } }.awaitAll()
   }
 }
