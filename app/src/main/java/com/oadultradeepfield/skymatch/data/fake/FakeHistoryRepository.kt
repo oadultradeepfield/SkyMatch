@@ -3,6 +3,7 @@ package com.oadultradeepfield.skymatch.data.fake
 import com.oadultradeepfield.skymatch.domain.model.solve.SolvingHistory
 import com.oadultradeepfield.skymatch.domain.repository.IHistoryRepository
 import com.oadultradeepfield.skymatch.domain.repository.ISolveRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -23,8 +24,8 @@ import javax.inject.Singleton
 @Singleton
 class FakeHistoryRepository @Inject constructor(private val solveRepository: ISolveRepository) :
     IHistoryRepository {
-
   private val histories = MutableStateFlow<List<MockData.HistoryData>>(MockData.initialHistories)
+  private val networkDelayMs: Long = 500L
 
   override fun observeHistories(): Flow<List<SolvingHistory>> {
     val solveRepo = solveRepository as? FakeSolveRepository
@@ -45,6 +46,7 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
   }
 
   override suspend fun createHistory(): String {
+    delay(networkDelayMs)
     val historyId = UUID.randomUUID().toString()
     val history =
         MockData.HistoryData(
@@ -58,6 +60,7 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
   }
 
   override suspend fun addResults(historyId: String, resultIds: List<String>) {
+    delay(networkDelayMs)
     histories.update { current ->
       current.map { history ->
         if (history.id != historyId) return@map history
@@ -70,6 +73,7 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
   }
 
   override suspend fun removeResults(historyId: String, resultIds: List<String>) {
+    delay(networkDelayMs)
     histories.update { current ->
       current.map { history ->
         if (history.id != historyId) return@map history
@@ -82,10 +86,7 @@ class FakeHistoryRepository @Inject constructor(private val solveRepository: ISo
   }
 
   override suspend fun deleteHistory(historyId: String) {
+    delay(networkDelayMs)
     histories.update { current -> current.filter { it.id != historyId } }
-  }
-
-  override suspend fun clearAll() {
-    histories.update { emptyList() }
   }
 }

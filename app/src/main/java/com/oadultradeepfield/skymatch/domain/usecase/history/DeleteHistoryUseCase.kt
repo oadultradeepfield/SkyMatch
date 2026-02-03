@@ -15,7 +15,4 @@ class DeleteHistoryUseCase @Inject constructor(private val repo: IHistoryReposit
    * @param historyId The ID of the solving history to delete.
    */
   suspend operator fun invoke(historyId: String) = repo.deleteHistory(historyId)
-
-  /** Clears all solving histories. */
-  suspend fun clearAll() = repo.clearAll()
 }

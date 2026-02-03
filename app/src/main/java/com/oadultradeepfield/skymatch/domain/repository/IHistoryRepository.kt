@@ -41,7 +41,4 @@ interface IHistoryRepository {
    * @param historyId The ID of the solving history to delete.
    */
   suspend fun deleteHistory(historyId: String)
-
-  /** Clears all solving histories. */
-  suspend fun clearAll()
 }
