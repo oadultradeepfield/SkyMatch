@@ -53,11 +53,6 @@ class FakeSearchRepository @Inject constructor() : ISearchRepository {
           ),
       )
 
-  override suspend fun getAllConstellations(): List<Constellation> {
-    delay(networkDelayMs)
-    return mockConstellations
-  }
-
   override suspend fun searchConstellations(query: String): List<Constellation> {
     delay(networkDelayMs)
 

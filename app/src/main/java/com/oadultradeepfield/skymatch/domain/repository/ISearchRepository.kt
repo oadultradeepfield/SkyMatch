@@ -4,14 +4,6 @@ import com.oadultradeepfield.skymatch.domain.model.constellation.Constellation
 
 /** Repository interface for searching constellations. */
 interface ISearchRepository {
-
-  /**
-   * Retrieves all available constellations.
-   *
-   * @return A list of all constellations.
-   */
-  suspend fun getAllConstellations(): List<Constellation>
-
   /**
    * Searches for constellations matching the given query.
    *
