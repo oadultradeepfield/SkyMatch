@@ -105,7 +105,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
       val success =
           it.copy(
               status = SolvingStatus.SUCCESS,
-              annotatedImageUrl = "https://example.com/annotated/$jobId.jpg",
+              annotatedImageUri = originalImageUris[jobId] ?: "",
               identifiedObjects = createFakeObjects(),
           )
       results[jobId] = success
