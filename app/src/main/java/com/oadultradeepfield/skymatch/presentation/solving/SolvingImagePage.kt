@@ -40,7 +40,7 @@ fun SolvingImagePage(
           color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
 
-      SolvingStatusText(status = item.solvingStatus)
+      SolvingStatusText(status = item.status)
 
       Box(
           modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -58,7 +58,7 @@ fun SolvingImagePage(
       Spacer(modifier = Modifier.height(24.dp))
 
       SolvingActionButton(
-          isCancellable = item.solvingStatus.isCancellable(),
+          isCancellable = item.status.isCancellable(),
           onCancel = onCancel,
           onDelete = onDelete,
       )
@@ -77,7 +77,7 @@ private fun PreviewSolvingImagePageInProgress() {
             SolvingResult(
                 id = "job-1",
                 originalImageUri = "",
-                solvingStatus = SolvingStatus.IDENTIFYING_OBJECTS,
+                status = SolvingStatus.IDENTIFYING_OBJECTS,
             ),
         pageIndex = 0,
         totalPages = 3,
@@ -98,7 +98,7 @@ private fun PreviewSolvingImagePageCompleted() {
             SolvingResult(
                 id = "job-1",
                 originalImageUri = "",
-                solvingStatus = SolvingStatus.SUCCESS,
+                status = SolvingStatus.SUCCESS,
             ),
         pageIndex = 1,
         totalPages = 3,

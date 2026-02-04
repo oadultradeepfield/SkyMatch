@@ -65,7 +65,7 @@ private fun SolvingScreenContent(
     onDeleteItem: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-  val hasCancellableItems = state.items.any { it.solvingStatus.isCancellable() }
+  val hasCancellableItems = state.items.any { it.status.isCancellable() }
 
   Scaffold(
       modifier = modifier,

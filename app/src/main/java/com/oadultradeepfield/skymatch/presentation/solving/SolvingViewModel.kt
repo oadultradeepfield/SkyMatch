@@ -105,13 +105,13 @@ constructor(
 
   private suspend fun handleCancelSolving(index: Int) {
     val item = state.value.items[index]
-    if (!item.solvingStatus.isCancellable()) return
+    if (!item.status.isCancellable()) return
     cancelSolvingUseCase(listOf(item.id))
   }
 
   private suspend fun handleCancelAll() {
     val cancellableJobIds =
-        state.value.items.filter { it.solvingStatus.isCancellable() }.map { it.id }
+        state.value.items.filter { it.status.isCancellable() }.map { it.id }
     if (cancellableJobIds.isEmpty()) return
     cancelSolvingUseCase(cancellableJobIds)
   }
@@ -121,7 +121,7 @@ constructor(
     val item = currentItems[index]
     val historyId = state.value.historyId!!
 
-    if (item.solvingStatus.isCancellable()) return
+    if (item.status.isCancellable()) return
 
     removeResultsFromHistoryUseCase(historyId, listOf(item.id))
 

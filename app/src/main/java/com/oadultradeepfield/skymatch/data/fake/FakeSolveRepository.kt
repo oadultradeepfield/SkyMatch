@@ -59,7 +59,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
   override suspend fun cancelSolving(jobId: String) {
     delay(Random.nextLong(networkDelayMs))
     cancelledJobs.add(jobId)
-    results[jobId]?.let { results[jobId] = it.copy(solvingStatus = SolvingStatus.CANCELLED) }
+    results[jobId]?.let { results[jobId] = it.copy(status = SolvingStatus.CANCELLED) }
   }
 
   override fun observeSolving(jobId: String): Flow<SolvingResult?> = flow {
@@ -77,7 +77,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
 
       if (Random.nextDouble() < observeFailureProbability) {
         results[jobId]?.let {
-          val failed = it.copy(solvingStatus = SolvingStatus.FAILURE)
+          val failed = it.copy(status = SolvingStatus.FAILURE)
           results[jobId] = failed
           emit(failed)
         }
@@ -90,7 +90,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
       }
 
       results[jobId]?.let {
-        val updated = it.copy(solvingStatus = status)
+        val updated = it.copy(status = status)
         results[jobId] = updated
         emit(updated)
       }
@@ -104,8 +104,8 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     results[jobId]?.let {
       val success =
           it.copy(
-              solvingStatus = SolvingStatus.SUCCESS,
-              annotatedImageUri = "content://fake/$jobId/annotated",
+              status = SolvingStatus.SUCCESS,
+              annotatedImageUrl = "https://example.com/annotated/$jobId.jpg",
               identifiedObjects = createFakeObjects(),
           )
       results[jobId] = success
@@ -116,7 +116,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
   private fun createResult(jobId: String): SolvingResult {
     return SolvingResult(
         id = jobId,
-        solvingStatus = SolvingStatus.QUEUED,
+        status = SolvingStatus.QUEUED,
         originalImageUri = originalImageUris[jobId] ?: "",
     )
   }

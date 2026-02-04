@@ -117,14 +117,14 @@ object MockData {
             SolvingResult(
                 id = "mock-result-orion",
                 originalImageUri = orion.imageUrl ?: "",
-                solvingStatus = SolvingStatus.QUEUED,
+                status = SolvingStatus.QUEUED,
                 createdAt = today,
             ),
         "mock-result-cassiopeia" to
             SolvingResult(
                 id = "mock-result-cassiopeia",
                 originalImageUri = cassiopeia.imageUrl ?: "",
-                solvingStatus = SolvingStatus.IDENTIFYING_OBJECTS,
+                status = SolvingStatus.IDENTIFYING_OBJECTS,
                 createdAt = today.plusSeconds(100),
             ),
         // History 2 results (Yesterday)
@@ -132,21 +132,21 @@ object MockData {
             SolvingResult(
                 id = "mock-result-ursa-major",
                 originalImageUri = ursaMajor.imageUrl ?: "",
-                solvingStatus = SolvingStatus.GETTING_MORE_DETAILS,
+                status = SolvingStatus.GETTING_MORE_DETAILS,
                 createdAt = today.minus(1, ChronoUnit.DAYS),
             ),
         "mock-result-ursa-minor" to
             SolvingResult(
                 id = "mock-result-ursa-minor",
                 originalImageUri = ursaMinor.imageUrl ?: "",
-                solvingStatus = SolvingStatus.FINDING_INTERESTING_INFO,
+                status = SolvingStatus.FINDING_INTERESTING_INFO,
                 createdAt = today.minus(1, ChronoUnit.DAYS).plusSeconds(100),
             ),
         "mock-result-draco" to
             SolvingResult(
                 id = "mock-result-draco",
                 originalImageUri = draco.imageUrl ?: "",
-                solvingStatus = SolvingStatus.FAILURE,
+                status = SolvingStatus.FAILURE,
                 createdAt = today.minus(1, ChronoUnit.DAYS).plusSeconds(200),
             ),
         // History 3 results (3 days ago)
@@ -154,14 +154,14 @@ object MockData {
             SolvingResult(
                 id = "mock-result-leo",
                 originalImageUri = leo.imageUrl ?: "",
-                solvingStatus = SolvingStatus.CANCELLED,
+                status = SolvingStatus.CANCELLED,
                 createdAt = today.minus(3, ChronoUnit.DAYS),
             ),
         "mock-result-aquarius" to
             SolvingResult(
                 id = "mock-result-aquarius",
                 originalImageUri = aquarius.imageUrl ?: "",
-                solvingStatus = SolvingStatus.QUEUED,
+                status = SolvingStatus.QUEUED,
                 createdAt = today.minus(3, ChronoUnit.DAYS).plusSeconds(100),
             ),
         // History 4 results (1 week ago)
@@ -169,7 +169,7 @@ object MockData {
             SolvingResult(
                 id = "mock-result-crux",
                 originalImageUri = crux.imageUrl ?: "",
-                solvingStatus = SolvingStatus.IDENTIFYING_OBJECTS,
+                status = SolvingStatus.IDENTIFYING_OBJECTS,
                 createdAt = today.minus(7, ChronoUnit.DAYS),
             ),
     )
