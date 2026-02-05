@@ -29,6 +29,7 @@ import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 @Composable
 fun SearchScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToSolving: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -44,6 +45,7 @@ fun SearchScreen(
       state = state,
       textFieldState = textFieldState,
       onNavigateBack = onNavigateBack,
+      onNavigateToSolving = onNavigateToSolving,
       onClearQuery = {
         textFieldState.edit { replace(0, length, "") }
         viewModel.dispatch(SearchIntent.ClearQuery)
@@ -58,6 +60,7 @@ private fun SearchScreenContent(
     state: SearchState,
     textFieldState: TextFieldState,
     onNavigateBack: () -> Unit,
+    onNavigateToSolving: (List<String>) -> Unit,
     onClearQuery: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -91,7 +94,12 @@ private fun SearchScreenContent(
         onExpandedChange = { if (!it) onNavigateBack() },
         modifier = Modifier.fillMaxWidth(),
     ) {
-      SearchResultContent(state = state)
+      SearchResultContent(
+          state = state,
+          onConstellationClick = { constellation ->
+            constellation.imageUrl?.let { url -> onNavigateToSolving(listOf(url)) }
+          },
+      )
     }
   }
 }
@@ -120,6 +128,7 @@ private fun PreviewSearchScreen() {
             ),
         textFieldState = TextFieldState(),
         onNavigateBack = {},
+        onNavigateToSolving = {},
         onClearQuery = {},
     )
   }
