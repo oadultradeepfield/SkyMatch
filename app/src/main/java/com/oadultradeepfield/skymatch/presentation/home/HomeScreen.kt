@@ -31,48 +31,51 @@ import com.oadultradeepfield.skymatch.util.findActivity
 fun HomeScreen(
     onNavigateToUpload: (List<String>) -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToSolving: (String) -> Unit,
     modifier: Modifier = Modifier,
     historyViewModel: HistoryViewModel = hiltViewModel(),
 ) {
-    val view = LocalView.current
-    val context = LocalContext.current
-    val historyState by historyViewModel.state.collectAsStateWithLifecycle()
-    var isHistoryScrolled by remember { mutableStateOf(false) }
+  val view = LocalView.current
+  val context = LocalContext.current
+  val historyState by historyViewModel.state.collectAsStateWithLifecycle()
+  var isHistoryScrolled by remember { mutableStateOf(false) }
 
-    DisposableEffect(Unit) {
-        val activity = context.findActivity() ?: return@DisposableEffect onDispose {}
-        val window = activity.window
-        val insetsController = WindowInsetsControllerCompat(window, view)
-        insetsController.isAppearanceLightStatusBars = false
+  DisposableEffect(Unit) {
+    val activity = context.findActivity() ?: return@DisposableEffect onDispose {}
+    val window = activity.window
+    val insetsController = WindowInsetsControllerCompat(window, view)
+    insetsController.isAppearanceLightStatusBars = false
 
-        onDispose { insetsController.isAppearanceLightStatusBars = true }
+    onDispose { insetsController.isAppearanceLightStatusBars = true }
+  }
+  Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+      HomeScreenBanner(
+          onNavigateToSearch = onNavigateToSearch,
+          showBottomFade = isHistoryScrolled,
+          modifier = Modifier.fillMaxWidth().height(300.dp),
+      )
+      HistorySection(
+          histories = historyState.histories,
+          isLoading = historyState.isLoading,
+          error = historyState.error,
+          onScrolledChanged = { isHistoryScrolled = it },
+          onHistoryClick = onNavigateToSolving,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+      )
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            HomeScreenBanner(
-                onNavigateToSearch = onNavigateToSearch,
-                showBottomFade = isHistoryScrolled,
-                modifier = Modifier.fillMaxWidth().height(300.dp),
-            )
-            HistorySection(
-                histories = historyState.histories,
-                isLoading = historyState.isLoading,
-                error = historyState.error,
-                onScrolledChanged = { isHistoryScrolled = it },
-                modifier = Modifier.fillMaxWidth().weight(1f),
-            )
-        }
-
-        UploadButton(
-            onImagesSelected = { uris -> onNavigateToUpload(uris.map { it.toString() }) },
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 44.dp),
-        )
-    }
+    UploadButton(
+        onImagesSelected = { uris -> onNavigateToUpload(uris.map { it.toString() }) },
+        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 44.dp),
+    )
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewHomeScreen() {
-    AppTheme(dynamicColor = false) { HomeScreen(onNavigateToUpload = {}, onNavigateToSearch = {}) }
+  AppTheme(dynamicColor = false) {
+    HomeScreen(onNavigateToUpload = {}, onNavigateToSearch = {}, onNavigateToSolving = {})
+  }
 }

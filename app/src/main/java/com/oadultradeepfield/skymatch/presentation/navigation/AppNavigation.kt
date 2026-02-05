@@ -25,6 +25,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
       HomeScreen(
           onNavigateToUpload = { imageUris -> navController.navigate(Route.Solving(imageUris)) },
           onNavigateToSearch = { navController.navigate(Route.Search) },
+          onNavigateToSolving = { historyId ->
+            navController.navigate(Route.Solving(historyId = historyId))
+          },
       )
     }
 
@@ -39,6 +42,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
       val route = backStackEntry.toRoute<Route.Solving>()
       SolvingScreen(
           imageUris = route.imageUris,
+          historyId = route.historyId,
           onNavigateBack = { navController.popBackStack() },
           onNavigateToHistory = {
             navController.navigate(Route.Home) { popUpTo(Route.Home) { inclusive = true } }

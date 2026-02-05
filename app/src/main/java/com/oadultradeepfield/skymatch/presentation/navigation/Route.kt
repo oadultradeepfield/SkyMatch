@@ -11,6 +11,10 @@ sealed class Route {
   /** Search screen - constellation search with filtering. */
   @Serializable data object Search : Route()
 
-  /** Solving screen - processes uploaded images. */
-  @Serializable data class Solving(val imageUris: List<String>) : Route()
+  /** Solving screen - processes uploaded images or resumes existing history. */
+  @Serializable
+  data class Solving(
+      val imageUris: List<String> = emptyList(),
+      val historyId: String? = null,
+  ) : Route()
 }

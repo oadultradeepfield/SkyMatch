@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SolvingScreen(
     imageUris: List<String>,
+    historyId: String?,
     onNavigateBack: () -> Unit,
     onNavigateToHistory: () -> Unit,
     modifier: Modifier = Modifier,
@@ -37,7 +38,13 @@ fun SolvingScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbarHostState = remember { SnackbarHostState() }
 
-  LaunchedEffect(imageUris) { viewModel.dispatch(SolvingIntent.Initialize(imageUris)) }
+  LaunchedEffect(imageUris, historyId) {
+    if (historyId != null) {
+      viewModel.dispatch(SolvingIntent.Resume(historyId))
+    } else if (imageUris.isNotEmpty()) {
+      viewModel.dispatch(SolvingIntent.Initialize(imageUris))
+    }
+  }
 
   LaunchedEffect(Unit) {
     viewModel.events.collectLatest { event ->

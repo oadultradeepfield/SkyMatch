@@ -27,4 +27,11 @@ sealed interface SolvingIntent : UiIntent {
    * @param index The index of the result to delete.
    */
   data class DeleteResult(val index: Int) : SolvingIntent
+
+  /**
+   * Intent to resume an existing solving history.
+   *
+   * @param historyId The ID of the history to resume.
+   */
+  data class Resume(val historyId: String) : SolvingIntent
 }

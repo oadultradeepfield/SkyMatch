@@ -7,6 +7,7 @@ import com.oadultradeepfield.skymatch.di.DispatcherProvider
 import com.oadultradeepfield.skymatch.domain.usecase.history.AddResultsToHistoryUseCase
 import com.oadultradeepfield.skymatch.domain.usecase.history.CreateHistoryUseCase
 import com.oadultradeepfield.skymatch.domain.usecase.history.DeleteHistoryUseCase
+import com.oadultradeepfield.skymatch.domain.usecase.history.GetHistoryUseCase
 import com.oadultradeepfield.skymatch.domain.usecase.history.RemoveResultsFromHistoryUseCase
 import com.oadultradeepfield.skymatch.domain.usecase.solve.CancelSolvingUseCase
 import com.oadultradeepfield.skymatch.domain.usecase.solve.ObserveSolvingUseCase
@@ -29,6 +30,7 @@ class SolvingViewModel
 constructor(
     @param:ApplicationContext private val context: Context,
     private val createHistoryUseCase: CreateHistoryUseCase,
+    private val getHistoryUseCase: GetHistoryUseCase,
     private val solveImagesUseCase: SolveImagesUseCase,
     private val observeSolvingUseCase: ObserveSolvingUseCase,
     private val cancelSolvingUseCase: CancelSolvingUseCase,
@@ -43,6 +45,7 @@ constructor(
   override suspend fun handleIntent(intent: SolvingIntent) {
     when (intent) {
       is SolvingIntent.Initialize -> handleInitialize(intent.imageUris)
+      is SolvingIntent.Resume -> handleResume(intent.historyId)
       is SolvingIntent.CancelSolving -> handleCancelSolving(intent.index)
       is SolvingIntent.CancelAll -> handleCancelAll()
       is SolvingIntent.DeleteResult -> handleDeleteResult(intent.index)
@@ -65,18 +68,47 @@ constructor(
       val images =
           imageUris.mapNotNull { uri -> readImageBytes(uri)?.let { bytes -> bytes to uri } }
       if (images.size != imageUris.size) {
+        deleteHistoryUseCase(historyId)
         handleError(Exception("Failed to read some images"))
         return
       }
 
       val jobIds = solveImagesUseCase(images).mapNotNull { it.getOrNull() }
       if (jobIds.size != imageUris.size) {
+        deleteHistoryUseCase(historyId)
         handleError(Exception("Failed to submit some images"))
         return
       }
 
       addResultsToHistoryUseCase(historyId, jobIds)
       observeSolvingProgress(jobIds)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      state.value.historyId?.let { deleteHistoryUseCase(it) }
+      handleError(e)
+    }
+  }
+
+  private suspend fun handleResume(historyId: String) {
+    setState { copy(isLoading = true, error = null) }
+
+    try {
+      val history = getHistoryUseCase(historyId)
+      if (history == null) {
+        handleError(Exception("History not found"))
+        return
+      }
+
+      setState { copy(historyId = historyId) }
+
+      val resultIds = history.solvingResults.map { it.id }
+      if (resultIds.isEmpty()) {
+        setState { copy(items = emptyList(), isLoading = false) }
+        return
+      }
+
+      observeSolvingProgress(resultIds)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
