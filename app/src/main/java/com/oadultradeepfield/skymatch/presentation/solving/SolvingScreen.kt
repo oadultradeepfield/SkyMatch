@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 fun SolvingScreen(
     imageUris: List<String>,
     onNavigateBack: () -> Unit,
+    onNavigateToHistory: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SolvingViewModel = hiltViewModel(),
 ) {
@@ -42,6 +43,7 @@ fun SolvingScreen(
     viewModel.events.collectLatest { event ->
       when (event) {
         is SolvingEvent.NavigateBack -> onNavigateBack()
+        is SolvingEvent.NavigateToHistory -> onNavigateToHistory()
         is SolvingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
       }
     }

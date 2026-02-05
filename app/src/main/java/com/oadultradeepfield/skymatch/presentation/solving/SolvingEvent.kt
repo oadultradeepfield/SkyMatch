@@ -7,6 +7,9 @@ sealed interface SolvingEvent : UiEvent {
   /** Event to navigate back to the previous screen. */
   data object NavigateBack : SolvingEvent
 
+  /** Event to navigate to history screen (used when all results are deleted). */
+  data object NavigateToHistory : SolvingEvent
+
   /**
    * Event to show an error message.
    *
