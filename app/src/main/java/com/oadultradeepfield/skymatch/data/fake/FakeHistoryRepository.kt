@@ -3,35 +3,31 @@ package com.oadultradeepfield.skymatch.data.fake
 import com.oadultradeepfield.skymatch.config.AppConfig
 import com.oadultradeepfield.skymatch.domain.model.solve.SolvingHistory
 import com.oadultradeepfield.skymatch.domain.repository.IHistoryRepository
-import com.oadultradeepfield.skymatch.domain.repository.ISolveRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 
 /** Fake implementation of [IHistoryRepository] for testing. */
 @Singleton
 class FakeHistoryRepository
 @Inject
 constructor(
-    private val solveRepository: ISolveRepository,
+    private val solveRepository: FakeSolveRepository,
 ) : IHistoryRepository {
   private val histories = MutableStateFlow<List<MockData.HistoryData>>(MockData.initialHistories)
   private val networkDelayMs = AppConfig.Network.DEFAULT_DELAY_MS
 
   override fun observeHistories(): Flow<List<SolvingHistory>> {
-    return histories.map { historyDataList ->
+    return combine(histories, solveRepository.resultsFlow) { historyDataList, resultsMap ->
       historyDataList
           .map { data ->
-            val results =
-                data.resultIds.mapNotNull { id ->
-                  MockData.solvingResults[id] ?: solveRepository.getResult(id)
-                }
+            val results = data.resultIds.mapNotNull { id -> resultsMap[id] }
             SolvingHistory(id = data.id, solvingResults = results, createdAt = data.createdAt)
           }
           .sortedByDescending { it.createdAt }
@@ -74,5 +70,16 @@ constructor(
   override suspend fun deleteHistory(historyId: String) {
     delay(networkDelayMs)
     histories.update { current -> current.filter { it.id != historyId } }
+  }
+
+  override suspend fun getHistory(historyId: String): SolvingHistory? {
+    delay(networkDelayMs)
+    val historyData = histories.value.find { it.id == historyId } ?: return null
+    val results = historyData.resultIds.mapNotNull { id -> solveRepository.getResult(id) }
+    return SolvingHistory(
+        id = historyData.id,
+        solvingResults = results,
+        createdAt = historyData.createdAt,
+    )
   }
 }

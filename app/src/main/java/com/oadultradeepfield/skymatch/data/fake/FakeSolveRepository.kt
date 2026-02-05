@@ -11,7 +11,11 @@ import com.oadultradeepfield.skymatch.domain.model.solve.SolvingStatus
 import com.oadultradeepfield.skymatch.domain.repository.ISolveRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.IOException
@@ -28,8 +32,14 @@ import kotlin.random.Random
 @Singleton
 class FakeSolveRepository @Inject constructor() : ISolveRepository {
   private val mutex = Mutex()
-  private val results = mutableMapOf<String, SolvingResult>()
-  private val originalImageUris = mutableMapOf<String, String>()
+  private val _results =
+      MutableStateFlow<Map<String, SolvingResult>>(MockData.solvingResults.toMutableMap())
+  val resultsFlow: StateFlow<Map<String, SolvingResult>> = _results.asStateFlow()
+
+  private val originalImageUris =
+      mutableMapOf<String, String>().apply {
+        MockData.solvingResults.forEach { (id, result) -> put(id, result.originalImageUri) }
+      }
   private val cancelledJobs = mutableSetOf<String>()
 
   private val networkDelayMs = AppConfig.Network.DEFAULT_DELAY_MS
@@ -54,7 +64,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     val jobId = UUID.randomUUID().toString()
     mutex.withLock {
       originalImageUris[jobId] = originalImageUri
-      results[jobId] = createResult(jobId)
+      _results.update { it + (jobId to createResult(jobId)) }
     }
     return jobId
   }
@@ -63,18 +73,25 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
     delay(Random.nextLong(networkDelayMs))
     mutex.withLock {
       cancelledJobs.add(jobId)
-      results[jobId]?.let { results[jobId] = it.copy(status = SolvingStatus.CANCELLED) }
+      _results.update { current ->
+        current[jobId]?.let { result ->
+          current + (jobId to result.copy(status = SolvingStatus.CANCELLED))
+        } ?: current
+      }
     }
   }
 
   override fun observeSolving(jobId: String): Flow<SolvingResult?> = flow {
-    val initial = mutex.withLock { results[jobId] }
+    val initial = mutex.withLock { _results.value[jobId] }
     emit(initial)
     if (initial == null) return@flow
 
+    // If already in terminal state, don't restart the solving timeline
+    if (!initial.status.isCancellable()) return@flow
+
     for ((status, delayMs) in solvingTimeline) {
       if (mutex.withLock { jobId in cancelledJobs }) {
-        emit(mutex.withLock { results[jobId] })
+        emit(mutex.withLock { _results.value[jobId] })
         return@flow
       }
 
@@ -82,9 +99,9 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
 
       if (Random.nextDouble() < observeFailureProbability) {
         mutex.withLock {
-          results[jobId]?.let {
+          _results.value[jobId]?.let {
             val failed = it.copy(status = SolvingStatus.FAILURE)
-            results[jobId] = failed
+            _results.update { current -> current + (jobId to failed) }
             emit(failed)
           }
         }
@@ -92,33 +109,33 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
       }
 
       if (mutex.withLock { jobId in cancelledJobs }) {
-        emit(mutex.withLock { results[jobId] })
+        emit(mutex.withLock { _results.value[jobId] })
         return@flow
       }
 
       mutex.withLock {
-        results[jobId]?.let {
+        _results.value[jobId]?.let {
           val updated = it.copy(status = status)
-          results[jobId] = updated
+          _results.update { current -> current + (jobId to updated) }
           emit(updated)
         }
       }
     }
 
     if (mutex.withLock { jobId in cancelledJobs }) {
-      emit(mutex.withLock { results[jobId] })
+      emit(mutex.withLock { _results.value[jobId] })
       return@flow
     }
 
     mutex.withLock {
-      results[jobId]?.let {
+      _results.value[jobId]?.let {
         val success =
             it.copy(
                 status = SolvingStatus.SUCCESS,
                 annotatedImageUri = originalImageUris[jobId] ?: "",
                 identifiedObjects = createFakeObjects(),
             )
-        results[jobId] = success
+        _results.update { current -> current + (jobId to success) }
         emit(success)
       }
     }
@@ -133,7 +150,7 @@ class FakeSolveRepository @Inject constructor() : ISolveRepository {
   }
 
   override fun getResult(jobId: String): SolvingResult? {
-    return results[jobId]
+    return _results.value[jobId]
   }
 
   private fun createFakeObjects(): List<IdentifiedObject> {
