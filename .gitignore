@@ -12,6 +12,7 @@
 /captures
 /plans
 /.claude
+/.agents
 .externalNativeBuild
 .cxx
 local.properties
