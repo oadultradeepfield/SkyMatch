@@ -14,12 +14,13 @@ import com.oadultradeepfield.skymatch.domain.usecase.solve.SolveImagesUseCase
 import com.oadultradeepfield.skymatch.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URL
+import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 /** ViewModel for handling solving screen intents and events. */
 @HiltViewModel
@@ -86,8 +87,12 @@ constructor(
   private suspend fun readImageBytes(uriString: String): ByteArray? =
       withContext(dispatchers.io) {
         try {
-          val uri = uriString.toUri()
-          context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+          if (uriString.startsWith("http://") || uriString.startsWith("https://")) {
+            URL(uriString).openStream().use { it.readBytes() }
+          } else {
+            val uri = uriString.toUri()
+            context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+          }
         } catch (_: Exception) {
           null
         }
@@ -139,7 +144,7 @@ constructor(
 
     if (updatedItems.isEmpty()) {
       deleteHistoryUseCase(historyId)
-      sendEvent(SolvingEvent.NavigateBack)
+      sendEvent(SolvingEvent.NavigateToHistory)
     } else {
       val newIndex = index.coerceAtMost(updatedItems.size - 1)
       setState { copy(items = updatedItems, currentIndex = newIndex) }
