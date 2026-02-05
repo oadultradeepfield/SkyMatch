@@ -5,27 +5,15 @@ import kotlinx.coroutines.flow.Flow
 
 /** Repository interface for solving celestial images and observing solving progress. */
 interface ISolveRepository {
-  /**
-   * Solves a celestial image and returns the job id.
-   *
-   * @param imageByte The byte array representation of the celestial image to be solved.
-   * @param originalImageUri The URI of the original image for local persistence.
-   * @return The job id of the solving process.
-   */
-  suspend fun solve(imageByte: ByteArray, originalImageUri: String): String
+    /** Solves a celestial image and returns the job id. */
+    suspend fun solve(imageByte: ByteArray, originalImageUri: String): String
 
-  /**
-   * Cancels the solving process for a celestial image with the specified job id.
-   *
-   * @param jobId The job id of the solving process to be canceled.
-   */
-  suspend fun cancelSolving(jobId: String)
+    /** Cancels the solving process for a celestial image with the specified job id. */
+    suspend fun cancelSolving(jobId: String)
 
-  /**
-   * Observes the solving progress of a celestial image.
-   *
-   * @param jobId The job id of the solving process.
-   * @return A flow of solving results updates.
-   */
-  fun observeSolving(jobId: String): Flow<SolvingResult?>
+    /** Observes the solving progress of a celestial image. */
+    fun observeSolving(jobId: String): Flow<SolvingResult?>
+
+    /** Retrieves a solving result by its job ID, or null if not found. */
+    fun getResult(jobId: String): SolvingResult?
 }
