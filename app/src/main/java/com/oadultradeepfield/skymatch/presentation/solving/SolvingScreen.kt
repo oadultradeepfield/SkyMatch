@@ -14,12 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oadultradeepfield.skymatch.presentation.ui.component.ConfirmationDialog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -65,7 +68,9 @@ private fun SolvingScreenContent(
     onDeleteItem: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+  var dialogConfig by remember { mutableStateOf<SolvingDialogConfig?>(null) }
   val hasCancellableItems = state.items.any { it.status.isCancellable() }
+  val cancellableCount = state.items.count { it.status.isCancellable() }
 
   Scaffold(
       modifier = modifier,
@@ -73,7 +78,7 @@ private fun SolvingScreenContent(
       topBar = {
         SolvingTopBar(
             onNavigateBack = onNavigateBack,
-            onCancelAll = onCancelAll,
+            onCancelAllRequest = { dialogConfig = SolvingDialogConfig.CancelAll(cancellableCount) },
             showCancelAll = hasCancellableItems,
         )
       },
@@ -88,11 +93,33 @@ private fun SolvingScreenContent(
         else ->
             SolvingPager(
                 items = state.items,
-                onCancelItem = onCancelItem,
-                onDeleteItem = onDeleteItem,
+                onCancelItemRequest = { index ->
+                  dialogConfig = SolvingDialogConfig.CancelSolving(index)
+                },
+                onDeleteItemRequest = { index ->
+                  dialogConfig = SolvingDialogConfig.DeleteResult(index)
+                },
             )
       }
     }
+  }
+
+  dialogConfig?.let { config ->
+    ConfirmationDialog(
+        title = config.title,
+        message = config.message,
+        confirmText = config.confirmText,
+        isDestructive = config.isDestructive,
+        onDismiss = { dialogConfig = null },
+        onConfirm = {
+          when (config) {
+            is SolvingDialogConfig.DeleteResult -> onDeleteItem(config.index)
+            is SolvingDialogConfig.CancelSolving -> onCancelItem(config.index)
+            is SolvingDialogConfig.CancelAll -> onCancelAll()
+          }
+          dialogConfig = null
+        },
+    )
   }
 }
 
@@ -109,8 +136,8 @@ private fun EmptyStateText(modifier: Modifier = Modifier) {
 @Composable
 private fun SolvingPager(
     items: List<com.oadultradeepfield.skymatch.domain.model.solve.SolvingResult>,
-    onCancelItem: (Int) -> Unit,
-    onDeleteItem: (Int) -> Unit,
+    onCancelItemRequest: (Int) -> Unit,
+    onDeleteItemRequest: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
   val scope = rememberCoroutineScope()
@@ -130,8 +157,8 @@ private fun SolvingPager(
         onNextPage = {
           scope.launch { if (page < items.size - 1) pagerState.animateScrollToPage(page + 1) }
         },
-        onCancel = { onCancelItem(page) },
-        onDelete = { onDeleteItem(page) },
+        onCancelRequest = { onCancelItemRequest(page) },
+        onDeleteRequest = { onDeleteItemRequest(page) },
     )
   }
 }

@@ -25,8 +25,8 @@ fun SolvingImagePage(
     totalPages: Int,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
-    onCancel: () -> Unit,
-    onDelete: () -> Unit,
+    onCancelRequest: () -> Unit,
+    onDeleteRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier.fillMaxSize()) {
@@ -59,8 +59,8 @@ fun SolvingImagePage(
 
       SolvingActionButton(
           isCancellable = item.status.isCancellable(),
-          onCancel = onCancel,
-          onDelete = onDelete,
+          onCancelRequest = onCancelRequest,
+          onDeleteRequest = onDeleteRequest,
       )
 
       Spacer(modifier = Modifier.height(32.dp))
@@ -83,8 +83,8 @@ private fun PreviewSolvingImagePageInProgress() {
         totalPages = 3,
         onPreviousPage = {},
         onNextPage = {},
-        onCancel = {},
-        onDelete = {},
+        onCancelRequest = {},
+        onDeleteRequest = {},
     )
   }
 }
@@ -104,8 +104,8 @@ private fun PreviewSolvingImagePageCompleted() {
         totalPages = 3,
         onPreviousPage = {},
         onNextPage = {},
-        onCancel = {},
-        onDelete = {},
+        onCancelRequest = {},
+        onDeleteRequest = {},
     )
   }
 }

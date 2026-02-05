@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun SolvingTopBar(
     onNavigateBack: () -> Unit,
-    onCancelAll: () -> Unit,
+    onCancelAllRequest: () -> Unit,
     showCancelAll: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -33,7 +33,7 @@ fun SolvingTopBar(
       },
       actions = {
         if (showCancelAll) {
-          TextButton(onClick = onCancelAll) {
+          TextButton(onClick = onCancelAllRequest) {
             Text(
                 text = "Cancel All",
                 color = MaterialTheme.colorScheme.error,

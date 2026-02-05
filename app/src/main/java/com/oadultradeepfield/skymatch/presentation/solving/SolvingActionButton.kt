@@ -12,20 +12,20 @@ import androidx.compose.ui.Modifier
 @Composable
 fun SolvingActionButton(
     isCancellable: Boolean,
-    onCancel: () -> Unit,
-    onDelete: () -> Unit,
+    onCancelRequest: () -> Unit,
+    onDeleteRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
   if (isCancellable) {
     OutlinedButton(
-        onClick = onCancel,
+        onClick = onCancelRequest,
         modifier = modifier.fillMaxWidth(0.6f),
     ) {
       Text("Cancel")
     }
   } else {
     Button(
-        onClick = onDelete,
+        onClick = onDeleteRequest,
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error,
