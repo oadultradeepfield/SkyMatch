@@ -28,13 +28,21 @@ fun AppNavigation(modifier: Modifier = Modifier) {
       )
     }
 
-    composable<Route.Search> { SearchScreen(onNavigateBack = { navController.popBackStack() }) }
+    composable<Route.Search> {
+      SearchScreen(
+          onNavigateBack = { navController.popBackStack() },
+          onNavigateToSolving = { imageUris -> navController.navigate(Route.Solving(imageUris)) },
+      )
+    }
 
     composable<Route.Solving> { backStackEntry ->
       val route = backStackEntry.toRoute<Route.Solving>()
       SolvingScreen(
           imageUris = route.imageUris,
           onNavigateBack = { navController.popBackStack() },
+          onNavigateToHistory = {
+            navController.navigate(Route.Home) { popUpTo(Route.Home) { inclusive = true } }
+          },
       )
     }
   }
