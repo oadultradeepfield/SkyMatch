@@ -10,6 +10,8 @@
 .DS_Store
 /build
 /captures
+/plans
+/.claude
 .externalNativeBuild
 .cxx
 local.properties
