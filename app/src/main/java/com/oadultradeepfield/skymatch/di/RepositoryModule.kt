@@ -15,21 +15,21 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
-    @Provides
-    @Singleton
-    fun provideSolveRepository(
-        fakeSolveRepository: FakeSolveRepository,
-    ): ISolveRepository = fakeSolveRepository
+  @Provides
+  @Singleton
+  fun provideSolveRepository(
+      fakeSolveRepository: FakeSolveRepository,
+  ): ISolveRepository = fakeSolveRepository
 
-    @Provides
-    @Singleton
-    fun provideHistoryRepository(
-        fakeHistoryRepository: FakeHistoryRepository,
-    ): IHistoryRepository = fakeHistoryRepository
+  @Provides
+  @Singleton
+  fun provideHistoryRepository(
+      fakeHistoryRepository: FakeHistoryRepository,
+  ): IHistoryRepository = fakeHistoryRepository
 
-    @Provides
-    @Singleton
-    fun provideSearchRepository(
-        fakeSearchRepository: FakeSearchRepository,
-    ): ISearchRepository = fakeSearchRepository
+  @Provides
+  @Singleton
+  fun provideSearchRepository(
+      fakeSearchRepository: FakeSearchRepository,
+  ): ISearchRepository = fakeSearchRepository
 }

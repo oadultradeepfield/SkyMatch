@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.oadultradeepfield.skymatch.config.AppConfig
 import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 
 @Composable
@@ -24,7 +25,7 @@ fun UploadButton(
 ) {
   val photoPicker =
       rememberLauncherForActivityResult(
-          contract = PickMultipleVisualMedia(maxItems = 10),
+          contract = PickMultipleVisualMedia(maxItems = AppConfig.UI.MAX_PHOTO_PICKER_ITEMS),
           onResult = { uris: List<Uri> ->
             if (uris.isNotEmpty()) {
               onImagesSelected(uris)

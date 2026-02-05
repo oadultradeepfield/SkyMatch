@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oadultradeepfield.skymatch.config.AppConfig
 import com.oadultradeepfield.skymatch.data.fake.MockData
 import com.oadultradeepfield.skymatch.domain.model.solve.SolvingHistory
 import com.oadultradeepfield.skymatch.presentation.ui.modifier.fadeEdges
@@ -31,60 +32,60 @@ fun HistoryGrid(
     onScrolledChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val thumbnails = remember(histories) {
-        histories.mapNotNull { it.solvingResults.firstOrNull() }
-    }
-    val backgroundColor = MaterialTheme.colorScheme.background
-    val gridState = rememberLazyGridState()
-    val isDarkTheme = isSystemInDarkTheme()
+  val thumbnails = remember(histories) { histories.mapNotNull { it.solvingResults.firstOrNull() } }
+  val backgroundColor = MaterialTheme.colorScheme.background
+  val gridState = rememberLazyGridState()
+  val isDarkTheme = isSystemInDarkTheme()
 
-    val isScrolled by remember { derivedStateOf { gridState.canScrollBackward } }
-    val topFadeAlpha by animateFloatAsState(
-        targetValue = if (isScrolled && isDarkTheme) 1f else 0f,
-        label = "topFadeAlpha",
-    )
+  val isScrolled by remember { derivedStateOf { gridState.canScrollBackward } }
+  val topFadeAlpha by
+      animateFloatAsState(
+          targetValue = if (isScrolled && isDarkTheme) 1f else 0f,
+          label = "topFadeAlpha",
+      )
 
-    LaunchedEffect(isScrolled) { onScrolledChanged(isScrolled) }
+  LaunchedEffect(isScrolled) { onScrolledChanged(isScrolled) }
 
-    Box(
-        modifier = modifier
-            .background(backgroundColor)
-            .fadeEdges(
-                backgroundColor = backgroundColor,
-                topFadeAlpha = topFadeAlpha,
-            ),
-    ) {
-        LazyVerticalGrid(
-            state = gridState,
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(
+  Box(
+      modifier =
+          modifier
+              .background(backgroundColor)
+              .fadeEdges(
+                  backgroundColor = backgroundColor,
+                  topFadeAlpha = topFadeAlpha,
+              ),
+  ) {
+    LazyVerticalGrid(
+        state = gridState,
+        columns = GridCells.Fixed(AppConfig.UI.GRID_COLUMNS),
+        contentPadding =
+            PaddingValues(
                 start = 12.dp,
                 end = 12.dp,
                 top = if (isDarkTheme) 18.dp else 0.dp,
-                bottom = 120.dp,
+                bottom = AppConfig.UI.BOTTOM_PADDING_DP.dp,
             ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            items(items = thumbnails, key = { it.id }) { result ->
-                HistoryGridItem(result = result)
-            }
-        }
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+      items(items = thumbnails, key = { it.id }) { result -> HistoryGridItem(result = result) }
     }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewHistoryGrid() {
-    AppTheme(dynamicColor = false) {
-        val sampleHistories = MockData.initialHistories.map { historyData ->
-            SolvingHistory(
-                id = historyData.id,
-                solvingResults = historyData.resultIds.mapNotNull { MockData.solvingResults[it] },
-                createdAt = historyData.createdAt,
-            )
+  AppTheme(dynamicColor = false) {
+    val sampleHistories =
+        MockData.initialHistories.map { historyData ->
+          SolvingHistory(
+              id = historyData.id,
+              solvingResults = historyData.resultIds.mapNotNull { MockData.solvingResults[it] },
+              createdAt = historyData.createdAt,
+          )
         }
-        HistoryGrid(histories = sampleHistories, onScrolledChanged = {})
-    }
+    HistoryGrid(histories = sampleHistories, onScrolledChanged = {})
+  }
 }

@@ -11,25 +11,27 @@ fun Modifier.fadeEdges(
     topFadeAlpha: Float = 0f,
     topFadeRatio: Float = 0.05f,
     bottomFadeRatio: Float = 0.2f,
-): Modifier = this.drawWithContent {
-    drawContent()
+): Modifier =
+    this.drawWithContent {
+      drawContent()
 
-    if (topFadeAlpha > 0f) {
+      if (topFadeAlpha > 0f) {
         drawRect(
-            brush = Brush.verticalGradient(
-                colors = listOf(backgroundColor, Color.Transparent),
-                startY = 0f,
-                endY = size.height * topFadeRatio,
-            ),
+            brush =
+                Brush.verticalGradient(
+                    colors = listOf(backgroundColor, Color.Transparent),
+                    startY = 0f,
+                    endY = size.height * topFadeRatio,
+                ),
             alpha = topFadeAlpha,
         )
+      }
+      drawRect(
+          brush =
+              Brush.verticalGradient(
+                  colors = listOf(Color.Transparent, backgroundColor, backgroundColor),
+                  startY = size.height * (1 - bottomFadeRatio),
+                  endY = size.height,
+              ),
+      )
     }
-
-    drawRect(
-        brush = Brush.verticalGradient(
-            colors = listOf(Color.Transparent, backgroundColor, backgroundColor),
-            startY = size.height * (1 - bottomFadeRatio),
-            endY = size.height,
-        ),
-    )
-}
