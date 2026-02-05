@@ -41,4 +41,12 @@ interface IHistoryRepository {
    * @param historyId The ID of the solving history to delete.
    */
   suspend fun deleteHistory(historyId: String)
+
+  /**
+   * Gets a specific solving history by ID.
+   *
+   * @param historyId The ID of the solving history to retrieve.
+   * @return The solving history, or null if not found.
+   */
+  suspend fun getHistory(historyId: String): SolvingHistory?
 }
