@@ -1,5 +1,6 @@
 package com.oadultradeepfield.skymatch.presentation.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,10 +30,12 @@ import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 @Composable
 fun ConstellationListItem(
     constellation: Constellation,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
   val placeholder = painterResource(R.drawable.placeholder)
   val context = LocalContext.current
+  val isClickable = onClick != null
 
   ConstellationListItemLayout(
       latinName = constellation.latinName,
@@ -49,7 +52,9 @@ fun ConstellationListItem(
             modifier = Modifier.size(72.dp).clip(RoundedCornerShape(8.dp)),
         )
       },
-      modifier = modifier,
+      modifier =
+          modifier.then(if (isClickable) Modifier.clickable(onClick = onClick!!) else Modifier),
+      alpha = if (isClickable) 1f else 0.5f,
   )
 }
 
@@ -59,6 +64,7 @@ private fun ConstellationListItemLayout(
     englishName: String,
     image: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    alpha: Float = 1f,
 ) {
   Row(
       modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -71,12 +77,12 @@ private fun ConstellationListItemLayout(
       Text(
           text = latinName,
           style = MaterialTheme.typography.headlineSmall,
-          color = MaterialTheme.colorScheme.onSurface,
+          color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
       )
       Text(
           text = englishName,
           style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
       )
     }
   }
@@ -84,7 +90,7 @@ private fun ConstellationListItemLayout(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewConstellationListItem() {
+private fun PreviewConstellationListItem() {
   AppTheme(dynamicColor = false) {
     ConstellationListItem(
         constellation =
@@ -93,6 +99,7 @@ fun PreviewConstellationListItem() {
                 englishName = "The Hunter",
                 imageUrl = "",
             ),
+        onClick = {},
     )
   }
 }
