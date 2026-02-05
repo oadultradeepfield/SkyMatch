@@ -30,6 +30,7 @@ fun HistorySection(
     isLoading: Boolean,
     error: String?,
     onScrolledChanged: (Boolean) -> Unit,
+    onHistoryClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
   when {
@@ -44,6 +45,7 @@ fun HistorySection(
         HistoryGrid(
             histories = histories,
             onScrolledChanged = onScrolledChanged,
+            onHistoryClick = onHistoryClick,
             modifier = modifier,
         )
   }
@@ -84,6 +86,7 @@ private fun PreviewHistorySectionLoading() {
         isLoading = true,
         error = null,
         onScrolledChanged = {},
+        onHistoryClick = {},
     )
   }
 }
@@ -97,6 +100,7 @@ private fun PreviewHistorySectionError() {
         isLoading = false,
         error = "Failed to load history.\nPlease try again.",
         onScrolledChanged = {},
+        onHistoryClick = {},
     )
   }
 }
@@ -110,6 +114,7 @@ private fun PreviewHistorySectionEmpty() {
         isLoading = false,
         error = null,
         onScrolledChanged = {},
+        onHistoryClick = {},
     )
   }
 }
@@ -131,6 +136,7 @@ private fun PreviewHistorySectionContent() {
         isLoading = false,
         error = null,
         onScrolledChanged = {},
+        onHistoryClick = {},
     )
   }
 }

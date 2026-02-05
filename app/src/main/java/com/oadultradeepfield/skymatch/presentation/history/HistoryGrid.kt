@@ -30,9 +30,9 @@ import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 fun HistoryGrid(
     histories: List<SolvingHistory>,
     onScrolledChanged: (Boolean) -> Unit,
+    onHistoryClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-  val thumbnails = remember(histories) { histories.mapNotNull { it.solvingResults.firstOrNull() } }
   val backgroundColor = MaterialTheme.colorScheme.background
   val gridState = rememberLazyGridState()
   val isDarkTheme = isSystemInDarkTheme()
@@ -69,7 +69,9 @@ fun HistoryGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize(),
     ) {
-      items(items = thumbnails, key = { it.id }) { result -> HistoryGridItem(result = result) }
+      items(items = histories, key = { it.id }) { history ->
+        HistoryGridItem(history = history, onClick = { onHistoryClick(history.id) })
+      }
     }
   }
 }
@@ -86,6 +88,6 @@ private fun PreviewHistoryGrid() {
               createdAt = historyData.createdAt,
           )
         }
-    HistoryGrid(histories = sampleHistories, onScrolledChanged = {})
+    HistoryGrid(histories = sampleHistories, onScrolledChanged = {}, onHistoryClick = {})
   }
 }
