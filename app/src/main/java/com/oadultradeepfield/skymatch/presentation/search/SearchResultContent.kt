@@ -30,12 +30,14 @@ import com.oadultradeepfield.skymatch.presentation.ui.theme.AppTheme
 @Composable
 fun SearchResultContent(
     state: SearchState,
+    onConstellationClick: (Constellation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
   SearchResultContentLayout(
       isLoading = state.isLoading,
       error = state.error,
       constellations = state.constellations,
+      onConstellationClick = onConstellationClick,
       modifier = modifier,
   )
 }
@@ -45,6 +47,7 @@ private fun SearchResultContentLayout(
     isLoading: Boolean,
     error: String?,
     constellations: List<Constellation>,
+    onConstellationClick: (Constellation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
   when {
@@ -58,7 +61,11 @@ private fun SearchResultContentLayout(
         LazyColumn(modifier = modifier.fillMaxSize()) {
           itemsIndexed(constellations, key = { _, item -> item.latinName }) { index, constellation
             ->
-            ConstellationListItem(constellation = constellation)
+            val hasImage = !constellation.imageUrl.isNullOrBlank()
+            ConstellationListItem(
+                constellation = constellation,
+                onClick = if (hasImage) ({ onConstellationClick(constellation) }) else null,
+            )
             if (index < constellations.lastIndex) {
               HorizontalDivider()
             }
@@ -123,6 +130,7 @@ private fun PreviewSearchResultContentLoading() {
         isLoading = true,
         error = null,
         constellations = emptyList(),
+        onConstellationClick = {},
     )
   }
 }
@@ -135,6 +143,7 @@ private fun PreviewSearchResultContentError() {
         isLoading = false,
         error = "Failed to load constellations. \nPlease try again.",
         constellations = emptyList(),
+        onConstellationClick = {},
     )
   }
 }
@@ -147,6 +156,7 @@ private fun PreviewSearchResultContentEmpty() {
         isLoading = false,
         error = null,
         constellations = emptyList(),
+        onConstellationClick = {},
     )
   }
 }
@@ -172,6 +182,7 @@ private fun PreviewSearchResultContentResults() {
         isLoading = false,
         error = null,
         constellations = sampleConstellations,
+        onConstellationClick = {},
     )
   }
 }
